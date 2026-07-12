@@ -6,6 +6,7 @@ Configuration is managed via `settings.py` / .env.
 """
 
 import logging
+from pathlib import Path
 
 from settings import settings
 
@@ -23,7 +24,8 @@ class EmbeddingProcessor:
             cache_folder: Override the default cache folder from settings.
         """
         self.model_name = model_name or settings.embedding_model_name
-        self.cache_folder = cache_folder or settings.embedding_cache_folder
+        raw = cache_folder or settings.embedding_cache_folder
+        self.cache_folder = str(Path(raw).expanduser()) if raw else None
         self._model = None
 
     @property

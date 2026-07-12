@@ -22,6 +22,15 @@ class Settings(BaseSettings):
     llm_chat_url: str | None = None   # override default chat URL per provider
     llm_health_url: str | None = None  # override default health URL per provider
 
+    # ── Text chunking ──────────────────────────────────────────
+    chunk_size: int = 512
+    chunk_overlap: int = 64
+
+    # ── Vector database (ChromaDB) ────────────────────────────
+    chroma_db_path: str = "./chroma_db"
+    chroma_collection_name: str = "documents"
+    chroma_top_k: int = 5
+
     # ── Analysis prompt (use {text} as placeholder) ────────────
     analysis_prompt: str = (
         'Analyze the following document and return ONLY valid JSON '
