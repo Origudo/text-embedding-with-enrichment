@@ -1,0 +1,49 @@
+Project Alpha — Sprint Planning Notes
+Date: July 8, 2026
+Attendees: Maria, James, Priya, David, Alex
+
+1. Sprint Goal
+   Complete the user authentication module and the dashboard data visualization components. Target deployment to staging by July 22.
+
+2. Review of Previous Sprint (Sprint 14)
+   - Login page UI: COMPLETED ✅
+   - Password reset flow: COMPLETED ✅ but needs edge case handling for expired tokens
+   - Database migration scripts: NOT COMPLETED ❌ — blocked by security team review
+   - API rate limiting: IN PROGRESS — estimated 2 more days
+
+3. Sprint 15 Backlog
+
+   Priority P0 (Must Have):
+   - Implement two-factor authentication (estimated: 5 days)
+   - OAuth integration with Google and Microsoft (estimated: 3 days)
+   - Dashboard chart components (estimated: 4 days)
+   - Unit tests for auth module (estimated: 2 days)
+
+   Priority P1 (Should Have):
+   - Session management timeout handling (estimated: 2 days)
+   - Error logging and monitoring setup (estimated: 1 day)
+   - User profile page (estimated: 3 days)
+
+   Priority P2 (Nice to Have):
+   - Dark mode toggle
+   - Export dashboard data to CSV
+   - Tooltip animations
+
+4. Dependencies and Blockers
+   - Database migration waiting on security team approval (Maria will follow up)
+   - OAuth integration needs API keys from IT infrastructure (James to request)
+   - Frontend depends on backend endpoints for dashboard data (API expected by July 14)
+
+5. Decisions Made
+   - Daily standup moved to 9:30 AM
+   - Code review required for all auth-related PRs
+   - Use feature flags for dark mode to avoid merge conflicts
+
+6. Action Items
+   - Maria: Email security team about migration approval
+   - James: Submit OAuth API key request
+   - Priya: Create component stubs for dashboard charts
+   - David: Write unit test templates
+   - Alex: Set up staging environment configuration
+
+Next meeting: July 11, 2026 — Mid-sprint check-in

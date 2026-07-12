@@ -1,0 +1,81 @@
+PROJECT PROPOSAL: Employee Wellness Platform
+Submitted by: Human Resources Department
+Date: July 2, 2026
+Version: 1.2
+
+1. EXECUTIVE SUMMARY
+
+This proposal outlines the development and implementation of a comprehensive Employee Wellness Platform for Aurora Innovations. The platform aims to address declining employee satisfaction scores, which have dropped from 82% to 67% over the past eighteen months, and rising healthcare costs that have increased by approximately 15% annually. The proposed solution integrates physical health tracking, mental health resources, financial wellness tools, and social connection features into a single, accessible platform.
+
+2. PROBLEM STATEMENT
+
+Employee burnout and stress levels have reached critical levels across the organization. Our annual employee survey revealed that 43% of employees report feeling burned out, 38% cite work-life balance as a major concern, and 52% say they would benefit from better access to mental health resources. Additionally, absenteeism due to stress-related illnesses has increased by 22% compared to last year. The current piecemeal approach of offering separate benefits through different vendors is confusing and underutilized, with only 12% of employees actively using available wellness resources.
+
+3. PROPOSED SOLUTION
+
+The Employee Wellness Platform will be a web and mobile application with the following modules:
+
+a) Physical Wellness Module
+   - Integration with fitness trackers (Apple Watch, Fitbit, Garmin)
+   - Step challenges and team competitions
+   - Gym reimbursement tracking
+   - Ergonomic workstation assessment tool
+
+b) Mental Health Module
+   - Access to licensed therapists via video sessions
+   - Guided meditation and mindfulness exercises
+   - Stress assessment and personalized recommendations
+   - Anonymous peer support groups
+
+c) Financial Wellness Module
+   - Budgeting tools and financial planning resources
+   - 401(k) and retirement planning guidance
+   - Student loan management assistance
+   - Financial health score tracking
+
+d) Social Connection Module
+   - Interest-based employee groups and clubs
+   - Company-wide events calendar
+   - Recognition and kudos system
+   - Mentorship matching program
+
+4. IMPLEMENTATION PLAN
+
+Phase 1 (Months 1-3): Requirements gathering, vendor selection, and prototype development
+Phase 2 (Months 4-6): Core feature development and integration with existing HR systems
+Phase 3 (Months 7-8): Beta testing with a pilot group of 100 employees
+Phase 4 (Month 9): Company-wide rollout and training
+Phase 5 (Months 10-12): Iteration based on feedback and feature enhancements
+
+5. BUDGET ESTIMATE
+
+Category                    Year 1          Year 2
+Software Development       $180,000         $60,000
+Infrastructure             $45,000          $30,000
+Vendor Licenses            $60,000          $60,000
+Training & Change Mgmt     $35,000          $15,000
+Ongoing Support            $25,000          $40,000
+Total                      $345,000         $205,000
+
+6. EXPECTED OUTCOMES
+
+- 30% increase in employee satisfaction scores within 12 months
+- 20% reduction in stress-related absenteeism
+- 15% decrease in healthcare cost growth rate
+- 50% employee adoption rate by end of year one
+- Improved talent retention, targeting a 10% reduction in voluntary turnover
+
+7. RISKS AND MITIGATION
+
+Risk: Low employee adoption
+Mitigation: Executive sponsorship, incentive programs, and targeted communication campaigns
+
+Risk: Data privacy concerns
+Mitigation: SOC 2 compliance, anonymized reporting, and transparent data usage policies
+
+Risk: Integration complexity with existing HR systems
+Mitigation: Dedicated integration team and phased rollout approach
+
+8. RECOMMENDATION
+
+We recommend approval of this proposal with a budget of $345,000 for the first year. The investment represents approximately 2.8% of annual payroll and is projected to deliver a return on investment of 3.5x within two years through reduced healthcare costs, improved productivity, and decreased turnover. A pilot program with a subset of employees is recommended to validate assumptions before full-scale deployment.
