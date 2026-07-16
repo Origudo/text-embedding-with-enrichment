@@ -15,9 +15,11 @@ class Settings(BaseSettings):
     embedding_model_name: str = "BAAI/bge-base-en-v1.5"
     embedding_cache_folder: str | None = None
 
-    # ── LLM (document analysis) ────────────────────────────────
+    # ── LLM (document analysis + RAG answer generation) ────────
     llm_provider: str = "lmstudio"  # "lmstudio" or "ollama"
     llm_model: str = "default"
+    llm_temperature: float = 0.3
+    llm_max_tokens: int = 1024
     llm_timeout: int = 60
     llm_chat_url: str | None = None   # override default chat URL per provider
     llm_health_url: str | None = None  # override default health URL per provider

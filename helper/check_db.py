@@ -1,10 +1,12 @@
 """
-Helper to inspect the contents of ChromaDB.
+Helper to inspect, reset, and manage ChromaDB contents.
 
 Usage:
-    python helper/check_db.py              # List all records
-    python helper/check_db.py --count       # Just show count
-    python helper/check_db.py --id <uuid>   # Show specific record
+    python helper/check_db.py                    # List all records
+    python helper/check_db.py --count             # Just show count
+    python helper/check_db.py --id <uuid>         # Show specific record
+    python helper/check_db.py --delete-all        # Delete ALL records
+    python helper/check_db.py --delete-file <name>  # Delete records by filename
 """
 
 import argparse
@@ -92,14 +94,55 @@ def show_by_id(record_id: str):
     print(f"  Text:\n{doc}\n")
 
 
+def delete_all():
+    """Delete every record from ChromaDB."""
+    collection = _get_collection()
+    count = collection.count()
+    if count == 0:
+        print("ChromaDB is already empty.")
+        return
+
+    all_ids = collection.get()["ids"]
+    collection.delete(ids=all_ids)
+    print(f"Deleted all {count} record(s) from ChromaDB.")
+
+
+def delete_by_filename(filename: str):
+    """Delete all records whose ``file_name`` metadata matches *filename*."""
+    collection = _get_collection()
+    data = collection.get(include=["metadatas"])
+
+    if not data["ids"]:
+        print("ChromaDB is empty.")
+        return
+
+    to_delete = [
+        id_ for id_, meta in zip(data["ids"], data["metadatas"])
+        if meta.get("file_name") == filename
+    ]
+
+    if not to_delete:
+        print(f"No records found with file_name '{filename}'.")
+        return
+
+    collection.delete(ids=to_delete)
+    print(f"Deleted {len(to_delete)} record(s) with file_name '{filename}'.")
+
+
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Inspect ChromaDB contents")
+    parser = argparse.ArgumentParser(description="Inspect and manage ChromaDB contents")
     parser.add_argument("--count", action="store_true", help="Show only record count")
     parser.add_argument("--id", type=str, help="Show a specific record by UUID")
     parser.add_argument("--full-text", action="store_true", help="Show full text of each record")
+    parser.add_argument("--delete-all", action="store_true", help="Delete ALL records")
+    parser.add_argument("--delete-file", type=str, metavar="FILENAME", help="Delete records by filename (e.g. technology_ai.txt)")
     args = parser.parse_args()
 
-    if args.count:
+    if args.delete_all:
+        delete_all()
+    elif args.delete_file:
+        delete_by_filename(args.delete_file)
+    elif args.count:
         show_count()
     elif args.id:
         show_by_id(args.id)

@@ -135,25 +135,13 @@ def _build_enriched_text(chunk_text: str, enrichment: Enrichment) -> str:
 # ======================================================================
 
 
-def process_and_store(
+def _process_single_file(
     file_path: str,
     analyzer: Optional[DocumentAnalyzer] = None,
     embedder: Optional[EmbeddingProcessor] = None,
 ) -> list[str]:
-    """
-    Full pipeline: analyze → chunk → enrich → embed → store.
-
-    Args:
-        file_path: Path to the text file to process.
-        analyzer:  Reusable DocumentAnalyzer instance (created fresh if None).
-        embedder:  Reusable EmbeddingProcessor instance (created fresh if None).
-
-    Returns:
-        List of UUIDs assigned to the stored chunks.
-    """
+    """Run the full pipeline on a single file. See ``process_and_store``."""
     path = Path(file_path)
-    if not path.exists():
-        raise FileNotFoundError(f"File not found: {file_path}")
 
     # ── 1. Read file content ──────────────────────────────────
     text = path.read_text(encoding="utf-8")
@@ -216,6 +204,52 @@ def process_and_store(
     collection.upsert(ids=ids, documents=documents, embeddings=embeddings, metadatas=metadatas)
     logger.info(f"  Stored {len(ids)} chunks in ChromaDB.")
     return ids
+
+
+def process_and_store(
+    file_path: str,
+    analyzer: Optional[DocumentAnalyzer] = None,
+    embedder: Optional[EmbeddingProcessor] = None,
+) -> list[str]:
+    """
+    Full pipeline: analyze → chunk → enrich → embed → store.
+
+    If *file_path* is a directory, all ``.txt`` files inside it are processed
+    recursively. Otherwise a single file is processed.
+
+    Args:
+        file_path: Path to a text file **or** a directory of ``.txt`` files.
+        analyzer:  Reusable DocumentAnalyzer instance (created fresh if None).
+        embedder:  Reusable EmbeddingProcessor instance (created fresh if None).
+
+    Returns:
+        List of UUIDs assigned to all stored chunks (across all files).
+    """
+    path = Path(file_path)
+    if not path.exists():
+        raise FileNotFoundError(f"Path not found: {file_path}")
+
+    if path.is_dir():
+        all_ids: list[str] = []
+        txt_files = sorted(path.rglob("*.txt"))
+        if not txt_files:
+            logger.warning(f"No .txt files found in '{file_path}'.")
+            return []
+
+        logger.info(f"Found {len(txt_files)} .txt file(s) in '{file_path}'")
+        for txt_path in txt_files:
+            try:
+                file_ids = _process_single_file(str(txt_path), analyzer, embedder)
+                all_ids.extend(file_ids)
+            except Exception as e:
+                logger.error(f"Failed to process '{txt_path.name}': {e}")
+                continue
+
+        logger.info(f"Total: processed {len(txt_files)} file(s), {len(all_ids)} chunk(s) stored.")
+        return all_ids
+
+    # Single file
+    return _process_single_file(file_path, analyzer, embedder)
 
 
 def search(
@@ -284,9 +318,11 @@ if __name__ == "__main__":
 
     if len(sys.argv) < 2:
         print("Usage:")
-        print("  python vector_store.py process <file_path>")
+        print("  python vector_store.py process <file_or_folder>")
         print("  python vector_store.py search <query_text>")
         print("  python vector_store.py reset")
+        print()
+        print("  <file_or_folder>  Single .txt file or folder of .txt files")
         sys.exit(1)
 
     command = sys.argv[1]
