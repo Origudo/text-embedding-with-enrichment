@@ -40,14 +40,18 @@ _SYSTEM_PROMPT = (
     "You are a helpful assistant answering questions based on the provided context. "
     "Use only the context below to answer. "
     "If the context lacks enough information, say so honestly."
+    "Do not provide any information about how you comeup with the answer"
+    "Just answer like you are an assistant"
 )
 
 
 def _build_prompt(question: str, chunks: list) -> str:
     """Combine retrieved chunks into a context block."""
-    context_parts = [
-        f"[Source {i}]\n{c.text}" for i, c in enumerate(chunks, start=1)
-    ]
+    context_parts = []
+    for i, c in enumerate(chunks, start=1):
+        meta = c.metadata
+        file_info = f"File: {meta.get('file_name', '?')}  |  Path: {meta.get('file_path', '?')}"
+        context_parts.append(f"[Source {i}]  {file_info}\n{c.text}")
     context = "\n\n".join(context_parts)
     return f"Context:\n{context}\n\nQuestion: {question}\n\nAnswer based solely on the context above."
 
@@ -59,6 +63,12 @@ def generate_answer(question: str, chunks: list) -> str:
 
     client = _get_client()
     user_prompt = _build_prompt(question, chunks)
+
+    print(f"\n{'=' * 60}")
+    print("LLM PROMPT")
+    print(f"{'=' * 60}")
+    print(user_prompt)
+    print(f"{'=' * 60}\n")
 
     response = client.chat.completions.create(
         model=settings.llm_model,

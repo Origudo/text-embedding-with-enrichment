@@ -1,0 +1,3 @@
+1. This sample project is lack of history context.
+   - For example a user ask for a file location of his notes. After this app returns the file location, the user asked a follow up query to give the summary of that file. (Right here, the context of the previous query is missing). 
+   - For the scenario mentioned above, it tries to search again using the follow up query of the user which will result an invalid information or no data at all.
