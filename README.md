@@ -87,8 +87,15 @@ The vector thus encodes both the **local content** (the chunk) and the **global 
 ├── vector_store.py          # Pipeline orchestrator + ChromaDB operations
 ├── run_pipeline.py          # End-to-end example script
 ├── test_all.py              # Quick test for analyzer & embedder
+├── .gitignore               # Python + ChromaDB + IDE ignores
 ├── helper/
 │   └── check_db.py          # Inspect ChromaDB contents
+├── search_helper/           # RAG query interface package
+│   ├── __init__.py          # Package marker
+│   ├── llm_client.py        # OpenAI-compatible LLM client for answer generation
+│   ├── rag_processor.py     # RAG orchestrator: embed → retrieve → generate
+│   ├── query_cli.py         # Interactive CLI for querying your documents
+│   └── test_init.py         # Integration test for search_helper
 └── sample_files/            # 10 diverse text files for PoC testing
 ```
 
@@ -134,6 +141,23 @@ python vector_store.py reset
 ```bash
 python run_pipeline.py
 ```
+
+### 6. Query your documents interactively (RAG)
+
+```bash
+# Index all sample files into ChromaDB first
+python -m vector_store process sample_files/
+
+# Launch the interactive RAG query CLI
+python -m search_helper.query_cli
+```
+
+Then type natural-language questions like:
+- *"What is the hard problem of consciousness?"*
+- *"Summarize the meeting notes"*
+- *"What were the financial results for Q2 2026?"*
+
+Type `exit` or `quit` to stop.
 
 ## Modules
 
@@ -195,6 +219,46 @@ The main orchestrator — runs the full pipeline and manages ChromaDB:
 | `process_and_store(file_path)` | Full pipeline: analyze → chunk → enrich → embed → store |
 | `search(query_embedding, top_k)` | Cosine similarity search with metadata |
 | `reset_database()` | Wipe all records for a fresh experiment run |
+
+### `search_helper.llm_client`
+
+OpenAI-compatible client for RAG answer generation. Supports both LM Studio and Ollama backends.
+
+```python
+from search_helper.llm_client import generate_answer
+
+answer = generate_answer("What is AI?", chunks)
+```
+
+The prompt sent to the LLM includes the retrieved chunk text along with file metadata (file name and path) so the model knows which documents the context came from. The full prompt is printed to the console for debugging.
+
+### `search_helper.rag_processor`
+
+Orchestrates the RAG loop: embed the query → retrieve similar chunks → generate an answer.
+
+```python
+from search_helper.rag_processor import RagProcessor
+
+processor = RagProcessor()
+result = processor.query("What is the hard problem of consciousness?")
+print(result.answer)
+```
+
+Returns a `RagResult` with both `.answer` (the LLM-generated text) and `.chunks` (the retrieved `SearchResult` objects).
+
+### `search_helper.query_cli`
+
+Interactive CLI that wraps `RagProcessor` in a REPL loop — prompts for a question, runs RAG, and prints the answer with source attribution.
+
+```bash
+python -m search_helper.query_cli
+```
+
+Features:
+- Continuous query loop until you type `exit` or `quit`
+- Prints retrieved chunks with file name, topic, and distance
+- Prints the full LLM prompt for transparency
+- Prints the final generated answer
 
 ```python
 ids = process_and_store(
@@ -264,6 +328,42 @@ Standard RAG pipelines embed raw chunks and hope the vector captures enough cont
 - **No fine-tuning required** — enrichment uses a general-purpose LLM, not a trained classifier.
 - **No model changes** — enrichment is an input transform; any embedding model benefits.
 - **Metadata doubles as filter** — `document_type` and `keywords` are stored separately in ChromaDB for hybrid search (pre-filter by type, then rank by similarity).
+
+## Interactive RAG Query CLI
+
+The `search_helper` package provides a full RAG query interface on top of the enriched ChromaDB:
+
+```mermaid
+flowchart LR
+    Q[User Query] --> EMB[EmbeddingProcessor]
+    EMB --> VEC[Query Vector]
+    VEC --> SEARCH[ChromaDB<br/>cosine similarity]
+    SEARCH --> CHUNKS[Top-K Chunks<br/>+ metadata]
+    CHUNKS --> PROMPT[Build LLM Prompt<br/>context + file info]
+    PROMPT --> LLM[Local LLM]
+    LLM --> ANSWER[Generated Answer]
+```
+
+### Example session
+
+```
+$ python -m search_helper.query_cli
+RAG Query Interface (type 'exit' or 'quit' to stop)
+
+Enter your search query: what is the hard problem of consciousness?
+
+Found 5 result(s):
+
+  1. [Philosophy of Mind] (philosophy_consciousness.txt) — distance: 0.2145
+  2. [A Day of Stress, Reflection, and Progress] (personal_journal.txt) — distance: 0.4012
+  ...
+
+============================================================
+ANSWER
+============================================================
+The hard problem of consciousness, as coined by David Chalmers, ...
+============================================================
+```
 
 ## Dependencies
 
